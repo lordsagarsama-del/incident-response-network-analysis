@@ -1,34 +1,60 @@
-# Network Traffic Analysis & Incident Response (NIST Framework)
+# Network Traffic Analysis & Incident Response
 
-## 📌 Incident Overview
-In this project, I investigated and documented a Denial of Service (DoS) security incident that compromised internal network operations[cite: 27]. Using network packet analysis tools (`tcpdump`) and protocol log telemetry, I diagnosed the root cause, contained the threat, and designed a long-term remediation plan using the **NIST Cybersecurity Framework**[cite: 2, 27, 28].
+## Project Overview
+Investigated two network security incidents using packet analysis and applied the **NIST Cybersecurity Framework** to contain, remediate, and prevent recurrence.
 
-## 🛠️ Tools & Technologies
-* **Analysis Tools:** `tcpdump`, Network Log Analyzers
-* **Protocols Investigated:** ICMP, UDP (Port 53 / DNS), TCP (SYN Flood), HTTP[cite: 1, 2, 31]
-* **Framework:** NIST Cybersecurity Framework (Identify, Protect, Detect, Respond, Recover)[cite: 27, 28]
-
-## 🔍 Incident Investigation Summary
-
-### 1. DNS & UDP Communication Failure
-* **Symptom:** Users reported being unable to reach external company web services[cite: 2].
-* **Diagnosis:** Analysis of network packet captures revealed ICMP echo replies returning `udp port 53 unreachable`[cite: 2].
-* **Root Cause:** The DNS software service listening on Port 53 was crashed, stopped, or blocked by firewall rules[cite: 2, 3].
-
-### 2. SYN Flood / DoS Attack Triage
-* **Symptom:** Web server connection timeouts occurred under abnormal request volume[cite: 1].
-* **Diagnosis:** Server logs reflected a rapid influx of SYN requests without completing the TCP 3-way handshake[cite: 1].
-* **Root Cause:** A malicious actor flooded the server with half-open TCP connections, rapidly draining system memory and preventing legitimate traffic[cite: 1].
+## Tools Used
+- `tcpdump` (packet capture)
+- Network log analysis
+- NIST Cybersecurity Framework (Identify → Protect → Detect → Respond → Recover)
 
 ---
 
-## 🛡️ NIST Framework Response Strategy
+## Incident 1: DNS Service Failure
 
-* **Identify:** Uncovered that an unconfigured firewall allowed external malicious actors to flood the internal network via ICMP pings and unverified connection requests[cite: 27].
-* **Protect:** Recommended implementing rate-limiting rules on ICMP traffic, enabling source IP address verification to block spoofing, and configuring Firewall Access Control Lists (ACLs)[cite: 27, 30].
-* **Detect:** Deployed network monitoring software and an Intrusion Detection/Prevention System (IDS/IPS) to baseline normal traffic patterns and flag anomalous spikes[cite: 27, 28].
-* **Respond:** Blocked incoming ICMP flood traffic at the perimeter firewall and temporarily took non-critical network services offline to isolate system impact[cite: 28].
-* **Recover:** Priority-restored core operational services, established automated network configuration backups, and instituted out-of-band communication channels for real-time incident coordination[cite: 28].
+**Symptom**  
+Users reported they could not access the company website (`yummyrecipesforme.com`).
 
-## 🚀 Business Impact
-Demonstrated structured incident triage using industry-standard frameworks, reducing system restoration time, securing perimeter firewalls against volume-based attacks, and maintaining operational continuity[cite: 27, 28, 29].
+**Investigation**  
+- Packet capture showed a client sending a DNS query (UDP) to the DNS server (`203.0.113.2`).
+- The server responded with an ICMP error: `udp port 53 unreachable` (timestamp 13:24:32).
+- The same failure occurred three times in succession.
+
+**Root Cause**  
+The DNS service on port 53 was either crashed, stopped, or blocked by a firewall rule, preventing domain name resolution.
+
+---
+
+## Incident 2: SYN Flood (DoS Attack)
+
+**Symptom**  
+Website connection timeouts under abnormal traffic load.
+
+**Investigation**  
+- Logs showed a rapid influx of SYN packets with no completed TCP handshakes.
+- The server was overwhelmed with half-open connections, exhausting system resources.
+
+**Root Cause**  
+A classic SYN Flood attack (a form of Denial-of-Service). The attacker sent large volumes of SYN requests but never completed the three-way handshake.
+
+---
+
+## NIST Framework Response
+
+| Function | Actions Taken |
+|----------|---------------|
+| **Identify** | Determined that an unconfigured firewall allowed external ICMP and SYN flood traffic into the network. |
+| **Protect** | Implemented rate-limiting on ICMP traffic, enabled source IP verification to block spoofing, and configured stricter firewall ACLs. |
+| **Detect** | Deployed network monitoring tools and an IDS/IPS to baseline normal traffic and alert on anomalous spikes. |
+| **Respond** | Blocked incoming ICMP flood traffic at the perimeter firewall and temporarily took non-critical services offline to contain impact. |
+| **Recover** | Restored critical services first, established automated configuration backups, and set up an out-of-band communication channel for future incidents. |
+
+---
+
+## Business Impact
+Demonstrated structured incident triage using industry-standard methodology. Reduced recovery time, hardened the network perimeter against volume-based attacks, and improved detection capabilities for future incidents.
+
+## Related Documents
+- [Cybersecurity Incident Report – Network Traffic Analysis](./Cybersecurity%20incident%20report%20network%20traffic%20analysis.pdf)
+- [Cybersecurity Incident Report – SYN Flood](./Cybersecurity%20incident%20report.pdf)
+- [Incident Report Analysis (NIST)](./Incident%20report%20analysis.pdf)
